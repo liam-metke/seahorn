@@ -16,12 +16,11 @@ class GetElementPtrInst;
 
 namespace seahorn {
 
-struct CallSiteInfo {
-
-  CallSiteInfo(CallSite &cs, ExprVector &fparams)
+struct CallBaseInfo {
+  CallBaseInfo(CallBase &cs, ExprVector &fparams)
       : m_cs(cs), m_fparams(fparams) {}
 
-  CallSite &m_cs;
+  CallBase &m_cs;
   ExprVector &m_fparams;
 };
 
@@ -89,7 +88,7 @@ public:
   unsigned storageSize(const llvm::Type *t);
   unsigned fieldOff(const StructType *t, unsigned field);
 
-  virtual void execCallSite(CallSiteInfo &csi, ExprVector &side, SymStore &s);
+  virtual void execCallBase(CallBaseInfo &csi, ExprVector &side, SymStore &s);
 };
 
 enum class ArrayOpt { IN, OUT };
@@ -126,7 +125,7 @@ public:
       : UfoOpSem(efac, pass, dl, trackLvl, abs_fns), m_shadowDsa(dsa),
         m_preproc(preproc) {}
 
-  void execCallSite(CallSiteInfo &CS, ExprVector &side, SymStore &s) override;
+  void execCallBase(CallBaseInfo &CS, ExprVector &side, SymStore &s) override;
 
 private:
   unsigned getOffset(const seadsa::Cell &c);
@@ -134,8 +133,8 @@ private:
   // creates the variant of an expression using m_copy_count
   Expr createVariant(Expr origE);
 
-  // generates the literals to copy of a callsite
-  bool VCgenCallSite(CallSiteInfo &csi, const FunctionInfo &fi,
+  // generates the literals to copy of a call site
+  bool VCgenCallBase(CallBaseInfo &csi, const FunctionInfo &fi,
                      ExprVector &side, SymStore &s);
   // generates the literals to copy of an argument
   void VCgenArg(const seadsa::Cell &c_arg_callee, Expr base_ptr,
@@ -160,9 +159,9 @@ private:
   void newTmpArraySymbol(const seadsa::Cell &c, Expr &currE, Expr &newE,
                          ArrayOpt ao);
 
-  // processes the shadow mem instructions prior to a callsite to obtain the
+  // processes the shadow mem instructions prior to a call site to obtain the
   // expressions that correspond to each of the cells involved.
-  void processShadowMemsCallSite(CallSiteInfo &csi);
+  void processShadowMemsCallBase(CallBaseInfo &csi);
 };
 
 struct InterMemStats {

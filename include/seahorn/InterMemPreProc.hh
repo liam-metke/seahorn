@@ -9,7 +9,7 @@ namespace seahorn {
 
   // preprocesor for vcgen with memory copies
   class InterMemPreProc {
-    /*! \brief Keeps for each CallSite of a module the simulation relation
+    /*! \brief Keeps for each CallBase of a module the simulation relation
      * between the caller and the callee (context sensitive), the nodes that
      * unsafe to copy per callee, caller and function (context insensitive).
      */
@@ -27,9 +27,9 @@ namespace seahorn {
                                       std::unique_ptr<NodeSet>>;
 
     NodesCSMap
-        m_unsafen_cs_callee; // set of unsafe nodes in the callee of callsite
+        m_unsafen_cs_callee; // set of unsafe nodes in the callee of call site
     NodesCSMap
-        m_unsafen_cs_caller; // set of unsafe nodes in the caller of callsite
+        m_unsafen_cs_caller; // set of unsafe nodes in the caller of call site
 
     using NodeFMap = llvm::DenseMap<const llvm::Function *, std::unique_ptr<NodeSet>>;
 
@@ -41,13 +41,13 @@ namespace seahorn {
                     seadsa::ShadowMem &shadowDsa)
         : m_ccg(ccg), m_shadowDsa(shadowDsa){};
 
-    /*! \brief For each CallSite of a module, it obtains the simulation relation
+    /*! \brief For each CallBase of a module, it obtains the simulation relation
      *   between the caller and the callee (context sensitive) and stores it.
      * This is used to compute which nodes are unsafe to copy.
      */
     bool runOnModule(llvm::Module &M);
-    NodeSet &getUnsafeCallerNodesCallSite(const llvm::CallSite &cs);
+    NodeSet &getUnsafeCallerNodesCallBase(const llvm::CallBase &cs);
     bool isSafeNode(NodeSet &unsafe, const seadsa::Node *n);
-    seadsa::SimulationMapper &getSimulationCallSite(const llvm::CallSite &cs);
+    seadsa::SimulationMapper &getSimulationCallBase(const llvm::CallBase &cb);
   };
 } // namespace seahorn
